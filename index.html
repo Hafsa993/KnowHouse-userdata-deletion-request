@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KnowHouse Data Deletion Request</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/build/index.min.js"></script>
     <style>
         :root {
             --primary-blue: #0066cc;
@@ -279,15 +278,12 @@
     </div>
 
     <script>
-        // Initialize EmailJS with your public key
-        // You need to replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
-        emailjs.init("YOUR_PUBLIC_KEY");
-
         const form = document.getElementById('deletionForm');
         const submitBtn = document.getElementById('submitBtn');
         const messageDiv = document.getElementById('message');
+        const recipientEmail = 'feuerflocken123@gmail.com';
 
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
 
             const username = document.getElementById('username').value.trim();
@@ -304,44 +300,28 @@
                 return;
             }
 
-            // Disable button and show loading state
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending Request...';
+            // Create mailto link with pre-filled content
+            const subject = encodeURIComponent('Data Deletion Request - KnowHouse');
+            const body = encodeURIComponent(
+                `Hello,\n\nI would like to request the deletion of my KnowHouse account and all associated personal data.\n\n` +
+                `Username: ${username}\n` +
+                `Family ID: ${familyId}\n` +
+                `Request Date: ${new Date().toLocaleString()}\n\n` +
+                `Please process this deletion request as soon as possible in accordance with privacy regulations.\n\n` +
+                `Thank you`
+            );
 
-            try {
-                // Send email using EmailJS
-                const response = await emailjs.send(
-                    'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
-                    'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
-                    {
-                        to_email: 'know.house.deletion@gmail.com',
-                        subject: 'DATA DELETION REQUEST',
-                        username: username,
-                        family_id: familyId,
-                        request_date: new Date().toLocaleString(),
-                        message_body: `Data Deletion Request\n\nUsername: ${username}\nFamily ID: ${familyId}\n\nRequested on: ${new Date().toLocaleString()}`
-                    }
-                );
+            const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
 
-                if (response.status === 200) {
-                    showMessage(
-                        '✓ Success! Your data deletion request has been submitted. Check your email for confirmation.',
-                        'success'
-                    );
-                    form.reset();
-                    submitBtn.textContent = 'Request Submitted';
-                } else {
-                    throw new Error('Failed to send request');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showMessage(
-                    '✗ Error sending request. Please try again or contact support.',
-                    'error'
-                );
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Deletion Request';
-            }
+            // Open the user's default email client
+            window.location.href = mailtoLink;
+
+            // Show success message
+            showMessage(
+                '✓ Your email client is opening with the deletion request template. Please review and send the email to complete your request.',
+                'success'
+            );
+            form.reset();
         });
 
         function showMessage(text, type) {
