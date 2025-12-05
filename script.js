@@ -20,6 +20,13 @@ form.addEventListener('submit', (e) => {
         return;
     }
 
+    // Validate Family ID
+    const familyIdRegex = /^[A-Z]{6}$/;
+    if (!familyIdRegex.test(familyId)) {
+        showMessage('Family ID must be exactly 6 uppercase letters (e.g., ABCDEF)', 'error');
+        return;
+    }
+
     // Create mailto link with pre-filled content
     const subject = encodeURIComponent('Data Deletion Request - KnowHouse');
     const body = encodeURIComponent(
